@@ -25,8 +25,17 @@ export async function removeFromCart(req, res) {
 
   res.send("Removed From Cart");
 }
-
 export async function getCart(req, res) {
-  let userData = await Users.findOne({ _id: req.user.id });
-  res.json(userData.cartData);
+  try {
+    const userData = await Users.findOne({ _id: req.user.id });
+
+    if (!userData) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(userData.cartData || {});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
 }
